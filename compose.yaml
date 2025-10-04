@@ -1,0 +1,7 @@
+﻿services:
+  authentication:
+    image: authentication
+    build:
+      context: .
+      dockerfile: Authentication/Dockerfile
+
