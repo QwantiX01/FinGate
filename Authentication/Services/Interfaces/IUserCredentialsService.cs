@@ -15,27 +15,18 @@ public interface IUserCredentialsService
     /// <param name="password">The password to validate.</param>
     /// <returns>True if the password is valid; otherwise, false.</returns>
     Task<bool> ValidateUserPasswordAsync(string username, string password);
-    
+
     /// <summary>
     /// Stores a token pair (access and refresh tokens) for the specified user.
     /// </summary>
     /// <param name="username">The username (primary key).</param>
     /// <param name="tokens">The token pair to store.</param>
     Task StoreTokenPairAsync(string username, TokenPair tokens);
-    
+
     /// <summary>
     /// Validates the refresh token associated with the provided access token for the specified user.
     /// </summary>
-    /// <param name="username">The username (primary key).</param>
     /// <param name="accessToken">The access token to validate against.</param>
     /// <returns>True if the refresh token is valid; otherwise, false.</returns>
-    Task<bool> ValidateRefreshTokenAsync(string username, string accessToken);
-    
-    /// <summary>
-    /// Validates the refresh token in the provided token pair for the specified user.
-    /// </summary>
-    /// <param name="username">The username (primary key).</param>
-    /// <param name="tokens">The token pair containing the refresh token to validate.</param>
-    /// <returns>True if the refresh token is valid; otherwise, false.</returns>
-    Task<bool> ValidateRefreshTokenPairAsync(string username, TokenPair tokens);
+    Task<bool> ValidateRefreshTokenAsync(string accessToken);
 }

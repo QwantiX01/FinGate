@@ -1,3 +1,5 @@
+using Authentication.Models;
+
 namespace Authentication.Services.Interfaces;
 
 /// <summary>
@@ -8,16 +10,16 @@ public interface ITokenService
     /// <summary>
     /// Generates a JWT access token for the specified user.
     /// </summary>
-    /// <param name="username">The username of the user (primary key).</param>
-    /// <param name="roles">Optional collection of user roles to include in the token.</param>
+    /// <param name="user">The user to generate token for.</param>
     /// <returns>A JWT access token string.</returns>
-    string GenerateToken(string username, IEnumerable<string>? roles = null);
+    string GenerateToken(User user);
     
     /// <summary>
-    /// Generates a secure refresh token.
+    /// Generates a secure refresh token for the specified user.
     /// </summary>
+    /// <param name="user">The user to generate refresh token for.</param>
     /// <returns>A cryptographically secure refresh token string.</returns>
-    string GenerateRefreshToken();
+    string GenerateRefreshToken(User user);
     
     /// <summary>
     /// Validates the provided JWT token.
