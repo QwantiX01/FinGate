@@ -21,7 +21,7 @@ public class AuthService(
     {
         logger.LogInformation("Attempting to register user: {Username}", registerContract.Username);
 
-        // Is a user exists in the credentials database?
+        // Is a user exists in the credentials' database?
         var userCredentials = await userRepository.GetByUsernameAsync(registerContract.Username);
         if (userCredentials != null)
         {
@@ -49,10 +49,11 @@ public class AuthService(
             throw new InvalidCredentialsException(loginContract.Username);
         }
 
-        var passwordHash = encryptionService.EncryptString(loginContract.Password);
-        if (userCredentials.PasswordHash != passwordHash)
+        var isPasswordValid =
+            await userCredentialsService.ValidateUserPasswordAsync(loginContract.Username, loginContract.Password);
+        if (!isPasswordValid)
         {
-            logger.LogWarning("Login failed: Invalid password for user: {Username}", loginContract.Username);
+            logger.LogInformation("Login failed: Password doesn't match: {Username}", loginContract.Username);
             throw new InvalidCredentialsException(loginContract.Username);
         }
 
@@ -60,7 +61,7 @@ public class AuthService(
         var refreshToken = tokenService.GenerateRefreshToken(userCredentials);
         var tokenPair = new TokenPair(accessToken, refreshToken);
 
-        await userCredentialsService.StoreTokenPairAsync(userCredentials.Username, tokenPair);
+        await userCredentialsService.StoreRefreshTokenAsync(userCredentials.Username, refreshToken);
         logger.LogInformation("User logged in successfully: {Username}", loginContract.Username);
         return tokenPair;
     }
@@ -73,13 +74,6 @@ public class AuthService(
         {
             logger.LogWarning("Token refresh failed: Empty refresh token provided");
             throw new InvalidTokenException("Refresh token cannot be empty");
-        }
-
-        var isValid = await userCredentialsService.ValidateRefreshTokenAsync(refreshContract.RefreshToken);
-        if (!isValid)
-        {
-            logger.LogWarning("Token refresh failed: Invalid refresh token");
-            throw new InvalidTokenException("Invalid refresh token");
         }
 
         var username = tokenService.GetUsernameFromToken(refreshContract.RefreshToken);
@@ -96,11 +90,18 @@ public class AuthService(
             throw new InvalidCredentialsException(username);
         }
 
+        var isValid = await userCredentialsService.ValidateRefreshTokenAsync(username, refreshContract.RefreshToken);
+        if (!isValid)
+        {
+            logger.LogWarning("Token refresh failed: Invalid refresh token");
+            throw new InvalidTokenException("Invalid refresh token");
+        }
+
         var accessToken = tokenService.GenerateToken(userCredentials);
         var refreshToken = tokenService.GenerateRefreshToken(userCredentials);
         var tokenPair = new TokenPair(accessToken, refreshToken);
 
-        await userCredentialsService.StoreTokenPairAsync(userCredentials.Username, tokenPair);
+        await userCredentialsService.StoreRefreshTokenAsync(userCredentials.Username, refreshToken);
         logger.LogInformation("Token refresh successful for user: {Username}", userCredentials.Username);
         return tokenPair;
     }

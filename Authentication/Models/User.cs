@@ -47,6 +47,17 @@ public class User
     public DateTime? LastLoginAt { get; set; }
 
     /// <summary>
+    /// Gets or sets the refresh token for the user.
+    /// This token is used to obtain a new access token.
+    /// </summary>
+    public string? RefreshToken { get; set; }
+
+    /// <summary>
+    /// Gets or sets the expiry date and time for the refresh token.
+    /// </summary>
+    public DateTime? RefreshTokenExpiryTime { get; set; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="User"/> class.
     /// </summary>
     /// <param name="username">The username for the user.</param>
