@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var applicationServingPort = builder.Configuration["ServingPort"]
-                             ?? throw new NotConfiguredException("ServingPort");
+var applicationServingPort = builder.Configuration["ServingUrl"]
+                             ?? throw new NotConfiguredException("ServingUrl");
 
 var dbConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                          ?? throw new NotConfiguredException("ConnectionStrings:DefaultConnection");
@@ -24,6 +24,5 @@ builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 var app = builder.Build();
 
 app.MapAuth();
-
 
 app.Run(applicationServingPort);

@@ -4,4 +4,17 @@
     build:
       context: .
       dockerfile: Authentication/Dockerfile
+  authentication-db:
+    image: mariadb:11.8.3
+    environment:
+      - MARIADB_ROOT_PASSWORD=lajnvyrktgefo7ui4tv5bfsjdbhkv
+      - MARIADB_DATABASE=authentication_db
+      - MARIADB_USER=auth_user
+      - MARIADB_PASSWORD=rtgvsdhykhk4syhgttikuyhservu4
+    ports:
+      - "3306:3306"
+    volumes:
+      - authentication_db_data:/var/lib/mysql
 
+volumes:
+  authentication_db_data:
