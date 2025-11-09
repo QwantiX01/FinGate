@@ -15,13 +15,5 @@ public class TokenPair(string accessToken, string refreshToken)
     /// Gets or sets the refresh token used to get a new access token when the current one expires.
     /// </summary>
     public string RefreshToken { get; set; } = refreshToken;
-
-    /// <summary>
-    /// Determines whether the current access token has expired.
-    /// </summary>
-    /// <returns>True if the access token has expired; otherwise, false.</returns>
-    public bool IsExpired()
-    {
-        throw new NotImplementedException();
-    }
+    
 }

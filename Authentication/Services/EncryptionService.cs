@@ -27,17 +27,5 @@ public class EncryptionService(IConfiguration configuration) : IEncryptionServic
         return Convert.ToBase64String(ms.ToArray());
     }
 
-    public string DecryptString(string password, string? key = null)
-    {
-        key ??= _secretKey;
-        using Aes aes = Aes.Create();
-        aes.Key = Encoding.UTF8.GetBytes(key);
-        aes.IV = Encoding.UTF8.GetBytes(_iv);
 
-        using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-        using var ms = new MemoryStream(Convert.FromBase64String(password));
-        using var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
-        using var sr = new StreamReader(cs);
-        return sr.ReadToEnd();
-    }
 }

@@ -1,5 +1,4 @@
 using Authentication.Contracts;
-using Authentication.Models;
 using Authentication.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,78 +10,47 @@ public static class AuthEndpoints
     {
         var authGroup = builder.MapGroup("api/auth");
 
-        // api/auth/register
         authGroup.MapPost("/register",
-                async (UserRegisterContract registerContract, IAuthService authService) =>
+            async (UserRegisterContract registerContract, IAuthService authService) =>
+            {
+                try
                 {
-                    try
-                    {
-                        var tokenPair = await authService.RegisterAsync(registerContract);
-                        return Results.Ok(tokenPair);
-                    }
-                    catch (Exception e)
-                    {
-                        return Results.BadRequest(new { message = e.Message });
-                    }
-                })
-            .Produces<TokenPair>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest)
-            .WithSummary("Registers a new user");
+                    var tokenPair = await authService.RegisterAsync(registerContract);
+                    return Results.Ok(tokenPair);
+                }
+                catch (Exception ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+            });
 
-        // api/auth/login
         authGroup.MapPost("/login",
-                async (UserLoginContract loginContract, IAuthService authService) =>
+            async (UserLoginContract loginContract, IAuthService authService) =>
+            {
+                try
                 {
-                    try
-                    {
-                        var tokenPair = await authService.LoginAsync(loginContract);
-                        return Results.Ok(tokenPair);
-                    }
-                    catch (Exception e)
-                    {
-                        return Results.BadRequest(new { message = e.Message });
-                    }
-                })
-            .Produces<TokenPair>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest)
-            .WithSummary("Logs in a user");
-
-        // api/auth/logout
-        authGroup.MapPost("/logout",
-                async (IAuthService authService) =>
+                    var tokenPair = await authService.LoginAsync(loginContract);
+                    return Results.Ok(tokenPair);
+                }
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        await authService.LogoutAsync();
-                        return Results.NoContent();
-                    }
-                    catch (Exception e)
-                    {
-                        return Results.BadRequest(new { message = e.Message });
-                    }
-                })
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status400BadRequest)
-            .WithSummary("Logs out the current user");
+                    return Results.Unauthorized();
+                }
+            });
 
-        // api/auth/refresh-token
         authGroup.MapPost("/refresh-token",
-                async (TokenRefreshContract refreshContract, IAuthService authService) =>
+            async (TokenRefreshContract refreshContract, IAuthService authService) =>
+            {
+                try
                 {
-                    try
-                    {
-                        var tokenPair = await authService.RefreshTokenAsync(refreshContract);
-                        return Results.Ok(tokenPair);
-                    }
-                    catch (Exception e)
-                    {
-                        return Results.BadRequest(new { message = e.Message });
-                    }
-                })
-            .Produces<TokenPair>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest)
-            .WithSummary("Refreshes an access token");
+                    var tokenPair = await authService.RefreshTokenAsync(refreshContract);
+                    return Results.Ok(tokenPair);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Unauthorized();
+                }
+            });
 
         return builder;
     }

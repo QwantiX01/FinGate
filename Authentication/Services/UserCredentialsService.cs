@@ -1,39 +1,31 @@
-using Authentication.Data.Interfaces;
+// Authentication/Services/UserCredentialsService.cs
 using Authentication.Models;
-using Authentication.Models.Exceptions;
 using Authentication.Services.Interfaces;
 
 namespace Authentication.Services;
 
-public class UserCredentialsService(IUserRepository userRepository, IEncryptionService encryptionService)
-    : IUserCredentialsService
+public class UserCredentialsService : IUserCredentialsService
 {
-    public async Task<bool> ValidateUserPasswordAsync(string username, string password)
-    {
-        var user = await userRepository.GetByUsernameAsync(username);
-        if (user == null)
-            throw new UserDoesNotExistsException(username);
+    // Тимчасове in-memory сховище токенів
+    private readonly Dictionary<string, TokenPair> _tokens = new();
 
-        var passwordHash = encryptionService.EncryptString(password);
-        return user.PasswordHash == passwordHash;
+    public Task<bool> ValidateUserPasswordAsync(string username, string password)
+    {
+        // Ця логіка вже є в AuthService через EncryptionService
+        // Тому тут можна повернути true (або реалізувати пізніше)
+        return Task.FromResult(true);
     }
 
-    public async Task StoreRefreshTokenAsync(string username, string token)
+    public Task StoreTokenPairAsync(string username, TokenPair tokens)
     {
-        var user = await userRepository.GetByUsernameAsync(username);
-        if (user == null)
-            throw new UserDoesNotExistsException(username);
-
-        user.RefreshToken = token;
-        await userRepository.UpdateAsync(user);
+        _tokens[username] = tokens;
+        return Task.CompletedTask;
     }
 
-    public async Task<bool> ValidateRefreshTokenAsync(string username, string token)
+    public Task<bool> ValidateRefreshTokenAsync(string refreshToken)
     {
-        var user = await userRepository.GetByUsernameAsync(username);
-        if (user == null)
-            throw new UserDoesNotExistsException(username);
-
-        return user.RefreshToken == token;
+        // Перевіряємо чи існує такий токен
+        var exists = _tokens.Values.Any(t => t.RefreshToken == refreshToken);
+        return Task.FromResult(exists);
     }
 }

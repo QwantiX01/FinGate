@@ -29,8 +29,5 @@ public interface IAuthService
     /// <returns>A new token pair containing updated access and refresh tokens.</returns>
     Task<TokenPair> RefreshTokenAsync(TokenRefreshContract refreshContract);
 
-    /// <summary>
-    /// Logs out a user and invalidates their authentication tokens.
-    /// </summary>
-    Task LogoutAsync();
+
 }

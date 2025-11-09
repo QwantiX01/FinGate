@@ -105,9 +105,5 @@ public class AuthService(
         logger.LogInformation("Token refresh successful for user: {Username}", userCredentials.Username);
         return tokenPair;
     }
-
-    public Task LogoutAsync()
-    {
-        throw new NotImplementedException();
-    }
+    
 }
